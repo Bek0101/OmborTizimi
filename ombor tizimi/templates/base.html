@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Inventory Management System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            background-color: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sidebar {
+            background-color: var(--primary-color);
+            color: white;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 250px;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 25px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: white;
+            border-left-color: var(--accent-color);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .navbar-top {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .navbar-top .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent-color), #2980b9);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-card h5 {
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        .stat-card.low-stock {
+            background: linear-gradient(135deg, var(--warning-color), #e67e22);
+        }
+
+        .stat-card.danger {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success-color), #229954);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .badge-danger {
+            background-color: var(--danger-color);
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+        }
+
+        .table {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f5f6f7;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .alert-danger {
+            background-color: #fadbd8;
+            color: #78281f;
+        }
+
+        .alert-warning {
+            background-color: #fdebd0;
+            color: #7d6608;
+        }
+
+        .alert-success {
+            background-color: #d5f4e6;
+            color: #145a32;
+        }
+
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .badge-low-stock {
+            background-color: var(--warning-color);
+        }
+
+        .badge-out-of-stock {
+            background-color: var(--danger-color);
+        }
+
+        .badge-in-stock {
+            background-color: var(--success-color);
+        }
+
+        .product-row.low-stock {
+            background-color: #fef5e7;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .product-row.out-of-stock {
+            background-color: #fadbd8;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .page-header h1 {
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="logo">
+            <h4><i class="bi bi-box-seam"></i> IMS</h4>
+            <small>Inventory System</small>
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="bi bi-graph-up"></i> Dashboard
+            </a>
+
+            {% if user.profile.role == 'admin' or user.is_staff %}
+            <a class="nav-link {% if request.resolver_match.url_name == 'products_list' %}active{% endif %}" href="{% url 'products_list' %}">
+                <i class="bi bi-boxes"></i> Products
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'create_product' %}active{% endif %}" href="{% url 'create_product' %}">
+                <i class="bi bi-plus-square"></i> New Product
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'categories' %}active{% endif %}" href="{% url 'categories' %}">
+                <i class="bi bi-tag"></i> Categories
+            </a>
+            {% endif %}
+
+            {% if user.profile.role in 'admin,staff' or user.is_staff %}
+            <a class="nav-link {% if request.resolver_match.url_name == 'stock_transaction' %}active{% endif %}" href="{% url 'stock_transaction' %}">
+                <i class="bi bi-arrow-left-right"></i> Record Transaction
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'transactions_list' %}active{% endif %}" href="{% url 'transactions_list' %}">
+                <i class="bi bi-receipt"></i> Transactions
+            </a>
+            {% endif %}
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'low_stock_alerts' %}active{% endif %}" href="{% url 'low_stock_alerts' %}">
+                <i class="bi bi-exclamation-triangle"></i> Alerts
+                {% with alerts=request.user.profile %}{% endwith %}
+            </a>
+
+            <hr style="background-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+            {% if user.profile.role == 'admin' or user.is_staff %}
+            <a class="nav-link" href="{% url 'user_management' %}">
+                <i class="bi bi-people"></i> Users
+            </a>
+            {% endif %}
+
+            <a class="nav-link" href="{% url 'profile' %}">
+                <i class="bi bi-person"></i> My Profile
+            </a>
+
+            <a class="nav-link" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-top">
+            <div class="container-fluid">
+                <span class="navbar-brand">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
+                <div class="user-menu">
+                    <small class="text-muted">{{ user.profile.get_role_display }}</small>
+                    <small class="text-muted">|</small>
+                    <small class="text-muted">{{ now|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <strong>
+                    {% if message.tags == 'success' %}
+                        <i class="bi bi-check-circle"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="bi bi-exclamation-circle"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="bi bi-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle"></i>
+                    {% endif %}
+                </strong>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div class="container-fluid">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

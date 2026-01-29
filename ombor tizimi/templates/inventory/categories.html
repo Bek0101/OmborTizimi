@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-tag"></i> Product Categories</h1>
+    <a href="{% url 'create_category' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Category
+    </a>
+</div>
+
+<div class="row">
+    {% for category in categories %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ category.name }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-muted">
+                    {{ category.description|default:"No description" }}
+                </p>
+                <div class="text-muted mb-3">
+                    <small>Created: {{ category.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+            <div class="card-footer bg-light d-flex gap-2">
+                <form method="post" style="flex: 1;">
+                    {% csrf_token %}
+                    <input type="hidden" name="category_id" value="{{ category.id }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="btn btn-sm btn-danger" style="width: 100%;" onclick="return confirm('Are you sure?')">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No categories found. <a href="{% url 'create_category' %}">Create one</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

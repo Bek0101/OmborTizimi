@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if action == 'create' %}Create{% else %}Edit{% endif %} Product - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        {% if action == 'create' %}
+            <i class="bi bi-plus-circle"></i> Create New Product
+        {% else %}
+            <i class="bi bi-pencil"></i> Edit Product
+        {% endif %}
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Product Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.sku.id_for_label }}" class="form-label">SKU / Code *</label>
+                            {{ form.sku }}
+                            {% if form.sku.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.sku.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Product Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.name.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger mt-2">
+                            {% for error in form.description.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.category.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.unit.id_for_label }}" class="form-label">Unit *</label>
+                            {{ form.unit }}
+                            {% if form.unit.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.unit.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.minimum_stock.id_for_label }}" class="form-label">Minimum Stock Level</label>
+                            {{ form.minimum_stock }}
+                            <small class="form-text text-muted">Alert when stock falls below this</small>
+                            {% if form.minimum_stock.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.minimum_stock.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.reorder_quantity.id_for_label }}" class="form-label">Reorder Quantity</label>
+                            {{ form.reorder_quantity }}
+                            <small class="form-text text-muted">Suggested quantity to reorder</small>
+                            {% if form.reorder_quantity.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.reorder_quantity.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.price.id_for_label }}" class="form-label">Unit Price ($)</label>
+                            {{ form.price }}
+                            {% if form.price.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.price.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Product Image</label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in form.image.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> {% if action == 'create' %}Create{% else %}Save{% endif %} Product
+                        </button>
+                        <a href="{% url 'products_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if action == 'edit' %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Stock Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="text-muted mb-1">Current Stock</p>
+                    <h3>{{ product.current_stock }} {{ product.unit }}</h3>
+                </div>
+                <div class="mb-3">
+                    <p class="text-muted mb-1">Stock Status</p>
+                    {% if product.stock_status == 'OUT_OF_STOCK' %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                    {% elif product.stock_status == 'LOW_STOCK' %}
+                        <span class="badge bg-warning">Low Stock</span>
+                    {% else %}
+                        <span class="badge bg-success">In Stock</span>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <p class="text-muted mb-1">Created</p>
+                    <small>{{ product.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary btn-sm" style="width: 100%;">
+                    <i class="bi bi-arrow-right"></i> View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
